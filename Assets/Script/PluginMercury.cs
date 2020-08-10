@@ -158,9 +158,21 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_EDITOR]->ActiveRewardVideo()");
 #elif UNITY_ANDROID
         print("[Android]->ActiveRewardVideo()");_plugin.Call("ActiveRewardVideo");
+        onEvent("adc");
 #elif UNITY_IPHONE
         print("[UNITY_IPHONE]->ActiveRewardVideo()");
         ActiveRewardVideo_IOS();
+#endif
+    }
+
+    public void onEvent(string eventID)
+    {
+#if UNITY_EDITOR
+        print("[UNITY_EDITOR]->onEvent()->eventID=" + eventID);
+#elif UNITY_ANDROID
+        print("[UNITY_ANDROID]->onEvent()->eventID="+eventID);
+#elif UNITY_IPHONE
+        // BuyProduct(eventID);
 #endif
     }
 
