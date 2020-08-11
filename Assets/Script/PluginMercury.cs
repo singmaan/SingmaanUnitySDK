@@ -280,6 +280,10 @@ public class PluginMercury : MonoBehaviour
     {
         print("[Unity]->onFunctionCallBack"+msg);
     }
+    public void ProductionIDCallBack(string msg)
+    {
+        print("[Unity]->ProductionIDCallBack"+msg);
+    }
 
 }
 
