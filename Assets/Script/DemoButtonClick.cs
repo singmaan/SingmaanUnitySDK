@@ -153,4 +153,29 @@ public class DemoButtonClick : MonoBehaviour {
         logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
         PluginMercury.Instance.GetProductionInfo();
     }
+
+
+    public void Data_UseItem()
+    {
+        logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
+        PluginMercury.Instance.Data_UseItem("5","item");
+    }
+
+    public void Data_LevelBegin()
+    {
+        logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
+        PluginMercury.Instance.Data_LevelBegin("level1");
+    }
+
+    public void Data_LevelCompleted()
+    {
+        logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
+        PluginMercury.Instance.Data_LevelCompleted("level1");
+    }
+
+    public void Data_Event()
+    {
+        logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
+        PluginMercury.Instance.Data_Event("Data_Event");
+    }
 }

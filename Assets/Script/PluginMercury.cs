@@ -158,21 +158,9 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_EDITOR]->ActiveRewardVideo()");
 #elif UNITY_ANDROID
         print("[Android]->ActiveRewardVideo()");_plugin.Call("ActiveRewardVideo");
-        onEvent("adc");
 #elif UNITY_IPHONE
         print("[UNITY_IPHONE]->ActiveRewardVideo()");
         ActiveRewardVideo_IOS();
-#endif
-    }
-
-    public void onEvent(string eventID)
-    {
-#if UNITY_EDITOR
-        print("[UNITY_EDITOR]->onEvent()->eventID=" + eventID);
-#elif UNITY_ANDROID
-        print("[UNITY_ANDROID]->onEvent()->eventID="+eventID);
-#elif UNITY_IPHONE
-        // BuyProduct(eventID);
 #endif
     }
 
@@ -205,6 +193,54 @@ public class PluginMercury : MonoBehaviour
         print("[Android]->ActiveNative()");_plugin.Call("ActiveNative");
 #elif UNITY_IPHONE
         print("[UNITY_IPHONE]->ActiveNative()");
+#endif
+    }
+
+    public void Data_UseItem(string quantity,string item)
+    {
+#if UNITY_EDITOR
+        print("[UNITY_EDITOR]->Data_UseItem()->eventID=" + quantity);
+#elif UNITY_ANDROID
+        print("[UNITY_ANDROID]->Data_UseItem()->eventID="+quantity);
+        _plugin.Call("Data_UseItem", quantity, item);
+#elif UNITY_IPHONE
+        // BuyProduct(eventID);
+#endif
+    }
+
+    public void Data_LevelBegin(string eventID)
+    {
+#if UNITY_EDITOR
+        print("[UNITY_EDITOR]->Data_LevelBegin()->eventID=" + eventID);
+#elif UNITY_ANDROID
+        print("[UNITY_ANDROID]->Data_LevelBegin()->eventID="+eventID);
+        _plugin.Call("Data_LevelBegin", eventID);
+#elif UNITY_IPHONE
+        // BuyProduct(eventID);
+#endif
+    }
+
+    public void Data_LevelCompleted(string eventID)
+    {
+#if UNITY_EDITOR
+        print("[UNITY_EDITOR]->Data_LevelCompleted()->eventID=" + eventID);
+#elif UNITY_ANDROID
+        print("[UNITY_ANDROID]->Data_LevelCompleted()->eventID="+eventID);
+        _plugin.Call("Data_LevelCompleted", eventID);
+#elif UNITY_IPHONE
+        // BuyProduct(eventID);
+#endif
+    }
+
+    public void Data_Event(string eventID)
+    {
+#if UNITY_EDITOR
+        print("[UNITY_EDITOR]->Data_Event()->eventID=" + eventID);
+#elif UNITY_ANDROID
+        print("[UNITY_ANDROID]->Data_Event()->eventID="+eventID);
+        _plugin.Call("Data_Event", eventID);
+#elif UNITY_IPHONE
+        // BuyProduct(eventID);
 #endif
     }
 
