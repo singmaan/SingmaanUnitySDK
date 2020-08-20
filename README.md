@@ -149,7 +149,29 @@ public void OpenGameCommunity()
 
 * open a website which are related community
 
+```java
+public void Data_UseItem(string quantity,string item)
+```
 
+* collecting data which how much items used
+
+```java
+public void Data_LevelBegin(string eventID)
+```
+
+* collecting data which level beginning
+
+```java
+public void Data_LevelCompleted(string eventID)
+```
+
+* collecting data which level completed
+
+```java
+public void Data_Event(string eventID)
+```
+
+* collecting data which developers's own key event 
 
 ___
 
