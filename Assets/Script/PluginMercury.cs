@@ -94,12 +94,12 @@ public class PluginMercury : MonoBehaviour
 #endif
     }
 
-    public void RestoreProduct()
+    public void RestorePruchase()
     {
 #if UNITY_EDITOR
-        print("[UNITY_EDITOR]->RestoreProduct()");
+        print("[UNITY_EDITOR]->RestorePruchase()");
 #elif UNITY_ANDROID
-        print("[Android]->RestoreProduct()");_plugin.Call("RestoreProduct");
+        print("[Android]->RestorePruchase()");_plugin.Call("RestorePruchase");
 #endif
     }
 
