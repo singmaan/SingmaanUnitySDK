@@ -102,7 +102,7 @@ public class DemoButtonClick : MonoBehaviour {
     public void BtnRestoreProduct()
     {
         logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
-        PluginMercury.Instance.RestoreProduct();
+        PluginMercury.Instance.RestorePruchase();
     }
 
     public void SingmaanLogin()
