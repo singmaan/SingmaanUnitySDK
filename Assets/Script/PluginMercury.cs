@@ -114,12 +114,12 @@ public class PluginMercury : MonoBehaviour
     }
 
 
-    public void UploadGameData()
+    public void UploadGameData(String data)
     {
 #if UNITY_EDITOR
         print("[UNITY_EDITOR]->UploadGameData()");
 #elif UNITY_ANDROID
-        print("[Android]->UploadGameData()");_plugin.Call("UploadGameData");
+        print("[Android]->UploadGameData()");_plugin.Call("UploadGameData",data);
 #endif
     }
 

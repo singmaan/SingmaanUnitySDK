@@ -120,7 +120,7 @@ public class DemoButtonClick : MonoBehaviour {
         public void UploadGameData()
     {
         logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
-        PluginMercury.Instance.UploadGameData();
+        PluginMercury.Instance.UploadGameData("this is testing data");
     }
 
     public void DownloadGameData()
