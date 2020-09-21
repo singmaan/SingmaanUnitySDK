@@ -21,6 +21,8 @@ public class PluginMercury : MonoBehaviour
     private static extern void GameInit(string name);
     [DllImport("__Internal")]
     private static extern void BuyProduct(string s);//购买商品(AppStore)
+    [DllImport ("__Internal")]
+    private static extern void MercuryLogin();
 #endif
 
     public static PluginMercury pInstance;
@@ -139,6 +141,9 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_EDITOR]->SingmaanLogin()");
 #elif UNITY_ANDROID
         print("[Android]->SingmaanLogin()");_plugin.Call("SingmaanLogin");
+#elif UNITY_IPHONE
+        print("[UNITY_IPHONE]->MercuryLogin()");
+        MercuryLogin();
 #endif
     }
 

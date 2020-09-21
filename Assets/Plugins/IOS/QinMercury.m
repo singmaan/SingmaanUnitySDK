@@ -38,6 +38,73 @@ static QinMercury *instance;
     UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveRewardVideo_IOS");
 }
 
+
++(void) Get_UUID_By_KeyChain
+{
+    NSString* uuid = [QinMercury getDeviceIDInKeychain];
+    UnitySendMessage("PluginMercury", "LoginSuccessCallBack", uuid.UTF8String);
+}
+
+
++(NSString *)getDeviceIDInKeychain {
+    NSString *bundleId =[[NSBundle mainBundle]bundleIdentifier];
+    NSString *getUDIDInKeychain = (NSString *)[QinMercury load:bundleId];
+    NSLog(@"从keychain中获取到的 UDID_INSTEAD %@",getUDIDInKeychain);
+    if (!getUDIDInKeychain ||[getUDIDInKeychain isEqualToString:@""]||[getUDIDInKeychain isKindOfClass:[NSNull class]]) {
+        CFUUIDRef puuid = CFUUIDCreate( nil );
+        CFStringRef uuidString = CFUUIDCreateString( nil, puuid );
+        NSString * result = (NSString *)CFBridgingRelease(CFStringCreateCopy( NULL, uuidString));
+        CFRelease(puuid);
+        CFRelease(uuidString);
+        NSLog(@"\n \n \n _____重新存储 UUID _____\n \n \n  %@",result);
+        [QinMercury save:bundleId data:result];
+        getUDIDInKeychain = (NSString *)[QinMercury load:bundleId];
+    }
+    NSLog(@"最终 ———— UDID_INSTEAD %@",getUDIDInKeychain);
+    return getUDIDInKeychain;
+}
+
+
++(NSMutableDictionary *)getKeychainQuery:(NSString *)service {
+    return [NSMutableDictionary dictionaryWithObjectsAndKeys:
+            (id)kSecClassGenericPassword,(id)kSecClass,
+            service, (id)kSecAttrService,
+            service, (id)kSecAttrAccount,
+            (id)kSecAttrAccessibleAfterFirstUnlock,(id)kSecAttrAccessible,
+            nil];
+}
+
++(void)save:(NSString *)service data:(id)data {
+    NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
+    SecItemDelete((CFDictionaryRef)keychainQuery);
+    [keychainQuery setObject:[NSKeyedArchiver archivedDataWithRootObject:data] forKey:(id)kSecValueData];
+    SecItemAdd((CFDictionaryRef)keychainQuery, NULL);
+}
+
+
++(id)load:(NSString *)service {
+    id ret = nil;
+    NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
+    [keychainQuery setObject:(id)kCFBooleanTrue forKey:(id)kSecReturnData];
+    [keychainQuery setObject:(id)kSecMatchLimitOne forKey:(id)kSecMatchLimit];
+    CFDataRef keyData = NULL;
+    if (SecItemCopyMatching((CFDictionaryRef)keychainQuery, (CFTypeRef *)&keyData) == noErr) {
+        ret = [NSKeyedUnarchiver unarchiveObjectWithData:(__bridge NSData *)keyData];
+    }
+    if (keyData)
+        CFRelease(keyData);
+    return ret;
+}
+
++ (void)delete:(NSString *)service {
+    NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
+    SecItemDelete((CFDictionaryRef)keychainQuery);
+}
+
+
+
+
+
 #if defined (__cplusplus)
 extern "C"
 {

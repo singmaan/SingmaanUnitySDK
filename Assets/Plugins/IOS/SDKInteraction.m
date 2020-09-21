@@ -31,6 +31,13 @@ void ActiveNative_IOS()
     [QinMercury ActiveNative_IOS];
 }
 
+void MercuryLogin()
+{
+    NSLog(@"this is MercuryLogin SDKInteraction");
+    [QinMercury Get_UUID_By_KeyChain];
+}
+
+
 
 
 
