@@ -22,7 +22,11 @@ public class PluginMercury : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void BuyProduct(string s);//购买商品(AppStore)
     [DllImport ("__Internal")]
-    private static extern void MercuryLogin();
+    private static extern void MercuryLogin_IOS();
+    [DllImport ("__Internal")]
+    private static extern void UploadGameData_IOS();
+    [DllImport ("__Internal")]
+    private static extern void DownloadGameData_IOS();
 #endif
 
     public static PluginMercury pInstance;
@@ -112,6 +116,8 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_EDITOR]->ExitGame()");
 #elif UNITY_ANDROID
         print("[Android]->ExitGame()");_plugin.Call("ExitGame");
+#elif UNITY_IPHONE
+        print("a");
 #endif
     }
 
@@ -122,6 +128,8 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_EDITOR]->UploadGameData()");
 #elif UNITY_ANDROID
         print("[Android]->UploadGameData()");_plugin.Call("UploadGameData",data);
+#elif UNITY_IPHONE
+        UploadGameData_IOS();
 #endif
     }
 
@@ -131,6 +139,8 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_EDITOR]->DownloadGameData()");
 #elif UNITY_ANDROID
         print("[Android]->DownloadGameData()");_plugin.Call("DownloadGameData");
+#elif UNITY_IPHONE
+        DownloadGameData_IOS();
 #endif
     }
 
@@ -143,7 +153,7 @@ public class PluginMercury : MonoBehaviour
         print("[Android]->SingmaanLogin()");_plugin.Call("SingmaanLogin");
 #elif UNITY_IPHONE
         print("[UNITY_IPHONE]->MercuryLogin()");
-        MercuryLogin();
+        MercuryLogin_IOS();
 #endif
     }
 

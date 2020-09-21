@@ -31,10 +31,22 @@ void ActiveNative_IOS()
     [QinMercury ActiveNative_IOS];
 }
 
-void MercuryLogin()
+void MercuryLogin_IOS()
 {
     NSLog(@"this is MercuryLogin SDKInteraction");
-    [QinMercury Get_UUID_By_KeyChain];
+    [QinMercury MercuryLogin_IOS];
+}
+
+void UploadGameData_IOS()
+{
+    NSLog(@"this is MercuryLogin SDKInteraction");
+    [QinMercury UploadGameData_IOS];
+}
+
+void DownloadGameData_IOS()
+{
+    NSLog(@"this is MercuryLogin SDKInteraction");
+    [QinMercury DownloadGameData_IOS];
 }
 
 

@@ -8,7 +8,9 @@
 +(void) ActiveInterstitial_IOS;
 +(void) ActiveBanner_IOS;
 +(void) ActiveNative_IOS;
-+(void) Get_UUID_By_KeyChain;
++(void) UploadGameData_IOS;
++(void) DownloadGameData_IOS;
++(void) MercuryLogin_IOS;
 +(NSString *)getDeviceIDInKeychain;
 @end
 

@@ -15,7 +15,7 @@ static QinMercury *instance;
 
 +(void) ActiveRewardVideo_IOS
 {
-    NSLog(@"this is ActiveRewardVideo_IOS object-c");
+    NSLog(@"this is ActiveRewardVideo_IOS http object-c");
     UnitySendMessage("PluginMercury", "AdShowSuccessCallBack", "ActiveRewardVideo_IOS");
     UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveRewardVideo_IOS");
 }
@@ -38,8 +38,57 @@ static QinMercury *instance;
     UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveRewardVideo_IOS");
 }
 
++(void) UploadGameData_IOS
+{
+    NSLog(@"this is UploadGameData_IOS object-c");
+    NSString *post = [NSString stringWithFormat:@"test=Message&this=isNotReal"];
+    NSMutableDictionary *dict  = [[NSMutableDictionary alloc] init];
+    NSError *error;
+    NSString *postParams = @"gamename=1&unique_id=1&data=bbbbbbb";
+    NSData *postData = [postParams dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:[NSURL URLWithString:@"http://192.168.10.7:10010/uploadgamedata"]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setHTTPBody:postData];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSString *requestReply = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+        NSString *UploadGameData = @"gamename=1&unique_id=1&data=bbbbbbb";
+        NSString *result = @"gamename=1&unique_id=1&data=bbbbbbb";
+        result = [UploadGameData stringByAppendingString:requestReply];
+        NSLog(@"Request reply: %@", requestReply);
+        UnitySendMessage("PluginMercury", "LoginSuccessCallBack", result.UTF8String);
+    }] resume];
+}
 
-+(void) Get_UUID_By_KeyChain
++(void) DownloadGameData_IOS
+{
+    NSLog(@"this is DownloadGameData_IOS object-c");
+    NSString *post = [NSString stringWithFormat:@"test=Message&this=isNotReal"];
+    NSMutableDictionary *dict  = [[NSMutableDictionary alloc] init];
+    NSError *error;
+    NSString *postParams = @"gamename=1&unique_id=1&data=bbbbbbb";
+    NSData *postData = [postParams dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:[NSURL URLWithString:@"http://192.168.10.7:10010/uploadgamedata"]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setHTTPBody:postData];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSString *requestReply = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+        NSString *UploadGameData = @"gamename=1&unique_id=1&data=bbbbbbb";
+        NSString *result = @"gamename=1&unique_id=1&data=bbbbbbb";
+        result = [UploadGameData stringByAppendingString:requestReply];
+        NSLog(@"Request reply: %@", requestReply);
+        UnitySendMessage("PluginMercury", "LoginSuccessCallBack", result.UTF8String);
+    }] resume];
+}
+
++(void) MercuryLogin_IOS
 {
     NSString* uuid = [QinMercury getDeviceIDInKeychain];
     UnitySendMessage("PluginMercury", "LoginSuccessCallBack", uuid.UTF8String);

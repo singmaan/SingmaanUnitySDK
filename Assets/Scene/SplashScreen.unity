@@ -552,6 +552,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1934137084}
   - component: {fileID: 1934137085}
+  - component: {fileID: 1934137086}
   m_Layer: 0
   m_Name: PluginMercury
   m_TagString: Untagged
@@ -585,3 +586,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a2090c2cdbd04fe3951d73d5d03c6db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1934137086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1934137083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3297d2e3a8aa5430cbeebc59ee3bcf94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseUrl: http://localhost:10010/
+  sKey: zoo_visit_key
