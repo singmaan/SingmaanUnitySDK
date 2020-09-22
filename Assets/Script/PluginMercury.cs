@@ -18,13 +18,13 @@ public class PluginMercury : MonoBehaviour
     [DllImport ("__Internal")]
     private static extern void ActiveNative_IOS();
     [DllImport ("__Internal")]
-    private static extern void GameInit(string name);
+    private static extern void GameInit();
     [DllImport("__Internal")]
     private static extern void BuyProduct(string s);//购买商品(AppStore)
     [DllImport ("__Internal")]
     private static extern void MercuryLogin_IOS();
     [DllImport ("__Internal")]
-    private static extern void UploadGameData_IOS();
+    private static extern void UploadGameData_IOS(string data);
     [DllImport ("__Internal")]
     private static extern void DownloadGameData_IOS();
 #endif
@@ -67,7 +67,7 @@ public class PluginMercury : MonoBehaviour
         }
 #elif UNITY_IPHONE
         print("[UNITY_IPHONE]->GameInit()");
-        GameInit("GameInit");
+        GameInit();
 #endif
     }
 
@@ -124,12 +124,13 @@ public class PluginMercury : MonoBehaviour
 
     public void UploadGameData(String data)
     {
+        print("[UNITY_EDITOR]->UploadGameData():"+data);
 #if UNITY_EDITOR
         print("[UNITY_EDITOR]->UploadGameData()");
 #elif UNITY_ANDROID
         print("[Android]->UploadGameData()");_plugin.Call("UploadGameData",data);
 #elif UNITY_IPHONE
-        UploadGameData_IOS();
+        UploadGameData_IOS(data);
 #endif
     }
 

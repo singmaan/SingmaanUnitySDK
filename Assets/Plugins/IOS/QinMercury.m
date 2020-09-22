@@ -2,6 +2,10 @@
 #import "IAPManager.h"
 
 static QinMercury *instance;
+NSString* const gamename =@"TerraGenesis";
+NSString* const back_url =@"http://192.168.10.7:10010/uploadgamedata";
+extern NSString *unique_id=@"";
+
 @implementation QinMercury
 
 +(QinMercury *) getAdInstance{
@@ -9,63 +13,71 @@ static QinMercury *instance;
 }
 +(void) GameInit
 {
-    NSLog(@"this is GameInit self object-c");
+    NSLog(@"[GameInit]");
+    NSString* uuid = [QinMercury getDeviceIDInKeychain];
+    unique_id = uuid;
     UnitySendMessage("PluginMercury", "onFunctionCallBack", "GameInit");
 }
 
 +(void) ActiveRewardVideo_IOS
 {
-    NSLog(@"this is ActiveRewardVideo_IOS http object-c");
+    NSLog(@"[ActiveRewardVideo_IOS]");
     UnitySendMessage("PluginMercury", "AdShowSuccessCallBack", "ActiveRewardVideo_IOS");
     UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveRewardVideo_IOS");
 }
 +(void) ActiveInterstitial_IOS
 {
-    NSLog(@"this is ActiveInterstitial_IOS object-c");
+    NSLog(@"[ActiveInterstitial_IOS]");
     UnitySendMessage("PluginMercury", "AdShowSuccessCallBack", "ActiveInterstitial_IOS");
-    UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveRewardVideo_IOS");
+    UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveInterstitial_IOS");
 }
 +(void) ActiveBanner_IOS
 {
-    NSLog(@"this is ActiveBanner_IOS object-c");
+    NSLog(@"[ActiveBanner_IOS]");
     UnitySendMessage("PluginMercury", "AdShowSuccessCallBack", "ActiveBanner_IOS");
-    UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveRewardVideo_IOS");
+    UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveBanner_IOS");
 }
 +(void) ActiveNative_IOS
 {
-    NSLog(@"this is ActiveNative_IOS object-c");
+    NSLog(@"[ActiveNative_IOS]");
     UnitySendMessage("PluginMercury", "AdShowSuccessCallBack", "ActiveNative_IOS");
-    UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveRewardVideo_IOS");
+    UnitySendMessage("PluginMercury", "AdLoadSuccessCallBack", "ActiveNative_IOS");
 }
 
-+(void) UploadGameData_IOS
++(void) MercuryLogin_IOS
 {
-    NSLog(@"this is UploadGameData_IOS object-c");
-    NSString *post = [NSString stringWithFormat:@"test=Message&this=isNotReal"];
+    NSLog(@"[MercuryLogin_IOS]");
+
+    UnitySendMessage("PluginMercury", "LoginSuccessCallBack", unique_id.UTF8String);
+}
+
++(void) UploadGameData_IOS:(NSString *)data
+{
+    NSLog(@"[UploadGameData_IOS]data=%@",data);
     NSMutableDictionary *dict  = [[NSMutableDictionary alloc] init];
     NSError *error;
-    NSString *postParams = @"gamename=1&unique_id=1&data=bbbbbbb";
+    NSString *game_data = data;
+    NSString *postParams = [[NSString alloc] initWithFormat:@"gamename=%@&unique_id=%@&data=%@", gamename, unique_id,game_data ];
     NSData *postData = [postParams dataUsingEncoding:NSUTF8StringEncoding];
     NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:@"http://192.168.10.7:10010/uploadgamedata"]];
+    [request setURL:[NSURL URLWithString:back_url]];
     [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setHTTPBody:postData];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSString *requestReply = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
-        NSString *UploadGameData = @"gamename=1&unique_id=1&data=bbbbbbb";
-        NSString *result = @"gamename=1&unique_id=1&data=bbbbbbb";
-        result = [UploadGameData stringByAppendingString:requestReply];
-        NSLog(@"Request reply: %@", requestReply);
-        UnitySendMessage("PluginMercury", "LoginSuccessCallBack", result.UTF8String);
+        NSString *UploadGameData = [back_url stringByAppendingString:postParams];;
+        NSString *result = @"";
+        NSLog(@"[UploadGameData_IOS]UploadGameData=%@",UploadGameData);
+        UnitySendMessage("PluginMercury", "LoginSuccessCallBack", requestReply.UTF8String);
     }] resume];
 }
 
 +(void) DownloadGameData_IOS
 {
-    NSLog(@"this is DownloadGameData_IOS object-c");
+    NSLog(@"[DownloadGameData_IOS]");
     NSString *post = [NSString stringWithFormat:@"test=Message&this=isNotReal"];
     NSMutableDictionary *dict  = [[NSMutableDictionary alloc] init];
     NSError *error;
@@ -86,30 +98,22 @@ static QinMercury *instance;
         NSLog(@"Request reply: %@", requestReply);
         UnitySendMessage("PluginMercury", "LoginSuccessCallBack", result.UTF8String);
     }] resume];
-}
-
-+(void) MercuryLogin_IOS
-{
-    NSString* uuid = [QinMercury getDeviceIDInKeychain];
-    UnitySendMessage("PluginMercury", "LoginSuccessCallBack", uuid.UTF8String);
 }
 
 
 +(NSString *)getDeviceIDInKeychain {
     NSString *bundleId =[[NSBundle mainBundle]bundleIdentifier];
     NSString *getUDIDInKeychain = (NSString *)[QinMercury load:bundleId];
-    NSLog(@"从keychain中获取到的 UDID_INSTEAD %@",getUDIDInKeychain);
     if (!getUDIDInKeychain ||[getUDIDInKeychain isEqualToString:@""]||[getUDIDInKeychain isKindOfClass:[NSNull class]]) {
         CFUUIDRef puuid = CFUUIDCreate( nil );
         CFStringRef uuidString = CFUUIDCreateString( nil, puuid );
         NSString * result = (NSString *)CFBridgingRelease(CFStringCreateCopy( NULL, uuidString));
         CFRelease(puuid);
         CFRelease(uuidString);
-        NSLog(@"\n \n \n _____重新存储 UUID _____\n \n \n  %@",result);
         [QinMercury save:bundleId data:result];
         getUDIDInKeychain = (NSString *)[QinMercury load:bundleId];
     }
-    NSLog(@"最终 ———— UDID_INSTEAD %@",getUDIDInKeychain);
+    NSLog(@"[getDeviceIDInKeychain]getUDIDInKeychain=%@",getUDIDInKeychain);
     return getUDIDInKeychain;
 }
 
@@ -159,7 +163,8 @@ extern "C"
 {
 #endif
     IAPManager *iapManager = nil;
-    void BuyProduct(char *p){
+    void BuyProduct(char *p)
+    {
         if(nil == iapManager){//初始化
             iapManager = [[IAPManager alloc] init];
         }
@@ -172,6 +177,56 @@ extern "C"
         //购买商品
         [iapManager buyRequest:pid];
     }
+    
+    void GameInit()
+    {
+        NSLog(@"[C][GameInit]");
+        [QinMercury GameInit];
+    }
+    
+    void ActiveRewardVideo_IOS()
+    {
+        NSLog(@"[C][ActiveRewardVideo_IOS]");
+        [QinMercury ActiveRewardVideo_IOS];
+    }
+    
+    void ActiveInterstitial_IOS()
+    {
+        NSLog(@"[C][ActiveInterstitial_IOS]");
+        [QinMercury ActiveInterstitial_IOS];
+    }
+
+    void ActiveBanner_IOS()
+    {
+        NSLog(@"[C][ActiveBanner_IOS]");
+        [QinMercury ActiveBanner_IOS];
+    }
+
+    void ActiveNative_IOS()
+    {
+        NSLog(@"[C][ActiveNative_IOS]");
+        [QinMercury ActiveNative_IOS];
+    }
+
+    void MercuryLogin_IOS()
+    {
+        NSLog(@"[C][MercuryLogin_IOS]");
+        [QinMercury MercuryLogin_IOS];
+    }
+    
+    void UploadGameData_IOS(char *p)
+    {
+        NSString *pid = [NSString stringWithUTF8String:p];
+        NSLog(@"[C][UploadGameData_IOS]");
+        [QinMercury UploadGameData_IOS:pid];
+    }
+    
+    void DownloadGameData_IOS()
+    {
+        NSLog(@"[C][DownloadGameData_IOS]");
+        [QinMercury DownloadGameData_IOS];
+    }
+    
 #if defined (__cplusplus)
 }
 #endif
