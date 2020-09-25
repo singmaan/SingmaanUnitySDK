@@ -1,6 +1,6 @@
 #import "QinMercury.h"
 #import "IAPManager.h"
-
+#import "TalkingDataGA.h"
 static QinMercury *instance;
 NSString* const gamename =@"TerraGenesis";
 NSString* const back_url =@"http://192.168.10.7:10010/uploadgamedata";
@@ -17,6 +17,7 @@ extern NSString *unique_id=@"";
     NSString* uuid = [QinMercury getDeviceIDInKeychain];
     unique_id = uuid;
     UnitySendMessage("PluginMercury", "onFunctionCallBack", "GameInit");
+
 }
 
 +(void) ActiveRewardVideo_IOS
@@ -157,25 +158,90 @@ extern NSString *unique_id=@"";
 
 
 
-
 #if defined (__cplusplus)
 extern "C"
 {
 #endif
     IAPManager *iapManager = nil;
+    NSString *timeString = @"";
     void BuyProduct(char *p)
     {
+        NSDate* date = [NSDate dateWithTimeIntervalSinceNow:0];//获取当前时间0秒后的时间
+        NSTimeInterval time=[date timeIntervalSince1970]*1000;// *1000 是精确到毫秒，不乘就是精确到秒
+        timeString = [NSString stringWithFormat:@"%.0f", time];
+        NSString *pid = [NSString stringWithUTF8String:p];
+        NSLog(@"[C][BuyProduct]:%@",timeString);
+        NSLog(@"[C][BuyProduct]:%@",pid);
+        NSString *my_iapId = @"";
+        int my_currencyAmount = 0;
+        NSArray *myWords = [pid componentsSeparatedByString:@"."];
+        int size = [myWords count];
+        NSLog(@"[C][BuyProduct]:size=%d",size);
+        if(size==0)
+        {
+            my_iapId = myWords[size];
+        }
+        else
+        {
+            my_iapId = myWords[size-1];
+        }
+        NSLog(@"[C][BuyProduct]:size=%@",my_iapId);
+        if([pid isEqualToString:@"uk.fiveaces.nsfcchina.superstriker"])
+        {
+            my_currencyAmount = 20;
+        }
+        else if([pid isEqualToString:@"uk.fiveaces.nsfcchina.superstriker"])
+        {
+            my_currencyAmount = 20;
+        }
+        else if([pid isEqualToString:@"uk.fiveaces.nsfcchina.superstriker"])
+        {
+            my_currencyAmount = 20;
+        }
+        else if([pid isEqualToString:@"uk.fiveaces.nsfcchina.superstriker"])
+        {
+            my_currencyAmount = 20;
+        }
+        else if([pid isEqualToString:@"uk.fiveaces.nsfcchina.superstriker"])
+        {
+            my_currencyAmount = 20;
+        }
+        else if([pid isEqualToString:@"uk.fiveaces.nsfcchina.superstriker"])
+        {
+            my_currencyAmount = 20;
+        }
+        else if([pid isEqualToString:@"uk.fiveaces.nsfcchina.superstriker"])
+        {
+            my_currencyAmount = 20;
+        }
+        else
+        {
+            my_iapId =@"testpid";
+            my_currencyAmount = 1;
+        }
+        
+        
+        [TDGAVirtualCurrency onChargeRequst:timeString
+                                      iapId:my_iapId
+                             currencyAmount:my_currencyAmount
+                               currencyType:@"RMB"
+                      virtualCurrencyAmount:1
+                                paymentType:@"AppStore"];
+
         if(nil == iapManager){//初始化
             iapManager = [[IAPManager alloc] init];
         }
         [iapManager attachObserver];
-        NSString *pid = [NSString stringWithUTF8String:p];
-        NSLog(@"商品编码:%@",pid);
+        
+        
         //pid = [NSString stringWithFormat:@"com.singmaan.sdk.6"];
         //商品信息
         [iapManager requestProductData:pid];
         //购买商品
         [iapManager buyRequest:pid];
+        [iapManager giveParam:timeString];
+        
+
     }
     
     void GameInit()

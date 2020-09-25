@@ -19,9 +19,11 @@
 }
 
 -(void)attachObserver;
+
 -(BOOL)CanMakePayment;
 -(void)requestProductData:(NSString *)productIdentifiers;
 -(void)buyRequest:(NSString *)productIdentifier;//保存Unity传递的商品ID
+-(void)giveParam:(NSString *)timeString;//保存Unity传递的商品ID
 
 @end
 

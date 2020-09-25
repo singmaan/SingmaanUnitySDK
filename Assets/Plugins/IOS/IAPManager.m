@@ -7,7 +7,11 @@
 //
 
 #import "IAPManager.h"
+#import "TalkingDataGA.h"
 @implementation IAPManager
+
+extern NSString *pid=@"";
+extern NSString *order_id=@"";
 
 -(void) attachObserver{
     NSLog(@"AttachObserver");
@@ -19,6 +23,8 @@
 }
 
 -(void) requestProductData:(NSString *)productIdentifiers{
+    pid =productIdentifiers;
+    NSLog(@"[C][requestProductData] pid%@",pid);
     NSArray *idArray = [productIdentifiers componentsSeparatedByString:@"\t"];
     NSSet *idSet = [NSSet setWithArray:idArray];
     [self sendRequest:idSet];
@@ -33,6 +39,7 @@
 -(void) productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
     
     NSLog(@"-----------收到产品反馈信息--------------");
+    NSLog(@"[C][productsRequest] pid%@",pid);
     NSArray *products = response.products;
     NSLog(@"产品Product ID:%@",response.invalidProductIdentifiers);
     NSLog(@"产品付费数量: %d", (int)[products count]);
@@ -50,6 +57,9 @@
         NSLog(@"Invalid product id:%@",invalidProductId);
     }
     // [request autorelease];
+}
+-(void)giveParam:(NSString *)timeString{
+    order_id =timeString;
 }
 
 -(void)buyRequest:(NSString *)productIdentifier{
@@ -154,10 +164,11 @@
             {
                 NSInteger purchasedCount = [defaults integerForKey:productIdentifier];//已购买数量
                 [[NSUserDefaults standardUserDefaults] setInteger:(purchasedCount+1) forKey:productIdentifier];
-                UnitySendMessage("PluginMercury", "PurchaseSuccessCallBack", productIdentifier.UTF8String);
+                [TDGAVirtualCurrency onChargeSuccess:order_id];
+                UnitySendMessage("PluginMercury", "PurchaseSuccessCallBack", pid.UTF8String);
             }else{
                 [[NSUserDefaults standardUserDefaults] setBool:YES forKey:productIdentifier];
-                UnitySendMessage("PluginMercury", "PurchaseSuccessCallBack", productIdentifier.UTF8String);
+                UnitySendMessage("PluginMercury", "PurchaseSuccessCallBack", pid.UTF8String);
             }
         }
     }else{
