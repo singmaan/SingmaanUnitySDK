@@ -52,6 +52,36 @@ extern NSString *unique_id=@"";
     UnitySendMessage("PluginMercury", "LoginSuccessCallBack", unique_id.UTF8String);
 }
 
++(void) Data_UseItem_IOS:(NSString *)quantity item:(NSString *)item
+{
+    NSLog(@"[Data_UseItem_IOS]%@,%@",quantity,item);
+    NSDictionary *dict3=@{quantity:item};
+    [TalkingDataGA onEvent:@"Event" eventData:dict3];
+
+}
+
++(void) Data_LevelBegin_IOS:(NSString *)eventID
+{
+    NSLog(@"[Data_LevelBegin_IOS]");
+    NSDictionary *dict3=@{@"LevelBegin":eventID};
+    [TalkingDataGA onEvent:@"Event" eventData:dict3];
+}
+
++(void) Data_LevelCompleted_IOS:(NSString *)eventID
+{
+    NSLog(@"[Data_LevelCompleted_IOS]");
+    NSDictionary *dict3=@{@"LevelCompleted":eventID};
+    [TalkingDataGA onEvent:@"Event" eventData:dict3];
+    
+}
+
++(void) Data_Event_IOS:(NSString *)eventID
+{
+    NSLog(@"[Data_Event_IOS]");
+    NSDictionary *dict3=@{@"key":eventID};
+    [TalkingDataGA onEvent:@"Event" eventData:dict3];
+}
+
 +(void) UploadGameData_IOS:(NSString *)data
 {
     NSLog(@"[UploadGameData_IOS]data=%@",data);
@@ -279,20 +309,49 @@ extern "C"
         NSLog(@"[C][MercuryLogin_IOS]");
         [QinMercury MercuryLogin_IOS];
     }
-    
+
     void UploadGameData_IOS(char *p)
     {
         NSString *pid = [NSString stringWithUTF8String:p];
         NSLog(@"[C][UploadGameData_IOS]");
         [QinMercury UploadGameData_IOS:pid];
     }
-    
+
     void DownloadGameData_IOS()
     {
         NSLog(@"[C][DownloadGameData_IOS]");
         [QinMercury DownloadGameData_IOS];
     }
-    
+
+    void Data_UseItem_IOS(char *quantity,char *item)
+    {
+        NSString *c_quantity = [NSString stringWithUTF8String:quantity];
+        NSString *c_item = [NSString stringWithUTF8String:item];
+        NSLog(@"[C][Data_UseItem]");
+        [QinMercury Data_UseItem_IOS:c_quantity item:c_item];
+    }
+
+    void Data_LevelBegin_IOS(char *eventID)
+    {
+        NSString *c_eventID = [NSString stringWithUTF8String:eventID];
+        NSLog(@"[C][Data_LevelBegin]");
+        [QinMercury Data_LevelBegin_IOS:c_eventID];
+    }
+
+    void Data_LevelCompleted_IOS(char *eventID)
+    {
+        NSString *c_eventID = [NSString stringWithUTF8String:eventID];
+        NSLog(@"[C][Data_LevelCompleted]");
+        [QinMercury Data_LevelCompleted_IOS:c_eventID];
+    }
+
+    void Data_Event_IOS(char *eventID)
+    {
+        NSString *c_eventID = [NSString stringWithUTF8String:eventID];
+        NSLog(@"[C][Data_Event]");
+        [QinMercury Data_Event_IOS:c_eventID];
+    }
+
 #if defined (__cplusplus)
 }
 #endif

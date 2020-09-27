@@ -42,7 +42,7 @@ public class DemoButtonClick : MonoBehaviour {
     {
         logtext.text += "支付按钮点击" + "\n";
         // E2WSdk.Instance.Buy("StrProduct");
-        PluginMercury.Instance.Purchase("pid");
+        PluginMercury.Instance.Purchase("com.singmaan.terragenesis.pack.fastforward.100");
     }
     public void BtExitClick()
     {

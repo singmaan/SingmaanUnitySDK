@@ -27,6 +27,14 @@ public class PluginMercury : MonoBehaviour
     private static extern void UploadGameData_IOS(string data);
     [DllImport ("__Internal")]
     private static extern void DownloadGameData_IOS();
+    [DllImport ("__Internal")]
+    private static extern void Data_UseItem_IOS(string quantity,string item);
+    [DllImport ("__Internal")]
+    private static extern void Data_LevelBegin_IOS(string eventID);
+    [DllImport ("__Internal")]
+    private static extern void Data_LevelCompleted_IOS(string eventID);
+    [DllImport ("__Internal")]
+    private static extern void Data_Event_IOS(string eventID);
 #endif
 
     public static PluginMercury pInstance;
@@ -220,7 +228,7 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_ANDROID]->Data_UseItem()->eventID="+quantity);
         _plugin.Call("Data_UseItem", quantity, item);
 #elif UNITY_IPHONE
-        // BuyProduct(eventID);
+        Data_UseItem_IOS(quantity,item);
 #endif
     }
 
@@ -232,7 +240,7 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_ANDROID]->Data_LevelBegin()->eventID="+eventID);
         _plugin.Call("Data_LevelBegin", eventID);
 #elif UNITY_IPHONE
-        // BuyProduct(eventID);
+        Data_LevelBegin_IOS(eventID);
 #endif
     }
 
@@ -244,7 +252,7 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_ANDROID]->Data_LevelCompleted()->eventID="+eventID);
         _plugin.Call("Data_LevelCompleted", eventID);
 #elif UNITY_IPHONE
-        // BuyProduct(eventID);
+        Data_LevelCompleted_IOS(eventID);
 #endif
     }
 
@@ -256,7 +264,7 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_ANDROID]->Data_Event()->eventID="+eventID);
         _plugin.Call("Data_Event", eventID);
 #elif UNITY_IPHONE
-        // BuyProduct(eventID);
+        Data_Event_IOS(eventID);
 #endif
     }
 
