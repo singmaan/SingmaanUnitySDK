@@ -35,9 +35,13 @@ public class PluginMercury : MonoBehaviour
     private static extern void Data_LevelCompleted_IOS(string eventID);
     [DllImport ("__Internal")]
     private static extern void Data_Event_IOS(string eventID);
+    [DllImport ("__Internal")]
+    private static extern void Redeem_IOS(string code);
+    
 #endif
 
     public static PluginMercury pInstance;
+    public static String my_redeem_code="abc";
     public static PluginMercury Instance
     {
         get
@@ -96,6 +100,8 @@ public class PluginMercury : MonoBehaviour
         print("[UNITY_EDITOR]->Redeem()");
 #elif UNITY_ANDROID
         print("[Android]->Redeem()");_plugin.Call("Redeem");
+#elif UNITY_IPHONE
+        Redeem_IOS(my_redeem_code);
 #endif
     }
 

@@ -3,7 +3,9 @@
 #import "TalkingDataGA.h"
 static QinMercury *instance;
 NSString* const gamename =@"TerraGenesis";
-NSString* const back_url =@"http://192.168.10.7:10010/uploadgamedata";
+NSString* const backup_url =@"http://192.168.10.7:10010/uploadgamedata";
+NSString* const download_url =@"http://192.168.10.7:10010/downloadgamedata";
+NSString* const redeem_url =@"http://office.singmaan.com:9989/redeem";
 extern NSString *unique_id=@"";
 
 @implementation QinMercury
@@ -52,6 +54,31 @@ extern NSString *unique_id=@"";
     UnitySendMessage("PluginMercury", "LoginSuccessCallBack", unique_id.UTF8String);
 }
 
++(void) Redeem_IOS:(NSString *)code
+{
+    NSLog(@"[Redeem_IOS]");
+    NSMutableDictionary *dict  = [[NSMutableDictionary alloc] init];
+    NSError *error;
+    NSString *game_code = code;
+    NSString *postParams = [[NSString alloc] initWithFormat:@"gamename=%@&redeemcode=%@", gamename, game_code];
+    NSData *postData = [postParams dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:[NSURL URLWithString:redeem_url]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setHTTPBody:postData];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSString *requestReply = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+        NSString *RedeemGameData = [redeem_url stringByAppendingString:postParams];;
+        NSString *result = @"Redeem_IOS:";
+        NSString *final_response = [result stringByAppendingString:requestReply];;
+        NSLog(@"[Redeem_IOS]RedeemGameData=%@",RedeemGameData);
+        UnitySendMessage("PluginMercury", "onFunctionCallBack", final_response.UTF8String);
+    }] resume];
+}
+
 +(void) Data_UseItem_IOS:(NSString *)quantity item:(NSString *)item
 {
     NSLog(@"[Data_UseItem_IOS]%@,%@",quantity,item);
@@ -92,42 +119,42 @@ extern NSString *unique_id=@"";
     NSData *postData = [postParams dataUsingEncoding:NSUTF8StringEncoding];
     NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:back_url]];
+    [request setURL:[NSURL URLWithString:backup_url]];
     [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setHTTPBody:postData];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSString *requestReply = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
-        NSString *UploadGameData = [back_url stringByAppendingString:postParams];;
-        NSString *result = @"";
+        NSString *UploadGameData = [backup_url stringByAppendingString:postParams];;
+        NSString *result = @"UploadGameData_IOS:";
         NSLog(@"[UploadGameData_IOS]UploadGameData=%@",UploadGameData);
-        UnitySendMessage("PluginMercury", "LoginSuccessCallBack", requestReply.UTF8String);
+        NSString *final_response = [result stringByAppendingString:requestReply];;
+        UnitySendMessage("PluginMercury", "onFunctionCallBack", final_response.UTF8String);
     }] resume];
 }
 
 +(void) DownloadGameData_IOS
 {
     NSLog(@"[DownloadGameData_IOS]");
-    NSString *post = [NSString stringWithFormat:@"test=Message&this=isNotReal"];
     NSMutableDictionary *dict  = [[NSMutableDictionary alloc] init];
     NSError *error;
-    NSString *postParams = @"gamename=1&unique_id=1&data=bbbbbbb";
+    NSString *postParams = [[NSString alloc] initWithFormat:@"gamename=%@&unique_id=%@", gamename, unique_id ];
     NSData *postData = [postParams dataUsingEncoding:NSUTF8StringEncoding];
     NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:@"http://192.168.10.7:10010/uploadgamedata"]];
+    [request setURL:[NSURL URLWithString:download_url]];
     [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setHTTPBody:postData];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSString *requestReply = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
-        NSString *UploadGameData = @"gamename=1&unique_id=1&data=bbbbbbb";
-        NSString *result = @"gamename=1&unique_id=1&data=bbbbbbb";
-        result = [UploadGameData stringByAppendingString:requestReply];
-        NSLog(@"Request reply: %@", requestReply);
-        UnitySendMessage("PluginMercury", "LoginSuccessCallBack", result.UTF8String);
+        NSString *UploadGameData = [download_url stringByAppendingString:postParams];;
+        NSString *result = @"DownloadGameData_IOS:";
+        NSLog(@"[UploadGameData_IOS]UploadGameData=%@",UploadGameData);
+        NSString *final_response = [result stringByAppendingString:requestReply];;
+        UnitySendMessage("PluginMercury", "onFunctionCallBack", final_response.UTF8String);
     }] resume];
 }
 
@@ -351,6 +378,14 @@ extern "C"
         NSLog(@"[C][Data_Event]");
         [QinMercury Data_Event_IOS:c_eventID];
     }
+
+    void Redeem_IOS(char *code)
+    {
+        NSString *c_code = [NSString stringWithUTF8String:code];
+        NSLog(@"[C][Data_Event]");
+        [QinMercury Redeem_IOS:c_code];
+    }
+    
 
 #if defined (__cplusplus)
 }
