@@ -8,38 +8,47 @@
 
 #import "IAPManager.h"
 #import "TalkingDataGA.h"
+
+@interface IAPManager ()<SKPaymentTransactionObserver, SKProductsRequestDelegate>
+// 所有商品
+@property (nonatomic, strong)NSArray *products;
+@property (nonatomic, strong)SKProductsRequest *request;
+@end
+ 
+static IAPManager *manager = nil;
+
 @implementation IAPManager
 
 extern NSString *pid=@"";
 extern NSString *order_id=@"";
 
 -(void) attachObserver{
-    NSLog(@"AttachObserver");
+    NSLog(@"[IAPManager][AttachObserver]");
     [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 }
 
 -(BOOL) CanMakePayment{
+    NSLog(@"[IAPManager][CanMakePayment]");
     return [SKPaymentQueue canMakePayments];
 }
 
 -(void) requestProductData:(NSString *)productIdentifiers{
     pid =productIdentifiers;
-    NSLog(@"[C][requestProductData] pid%@",pid);
+    NSLog(@"[IAPManager][requestProductData] pid%@",pid);
     NSArray *idArray = [productIdentifiers componentsSeparatedByString:@"\t"];
     NSSet *idSet = [NSSet setWithArray:idArray];
     [self sendRequest:idSet];
 }
 
 -(void) sendRequest:(NSSet *)idSet{
+    NSLog(@"[IAPManager][sendRequest]");
     SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:idSet];
     request.delegate = self;
     [request start];
 }
 
 -(void) productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
-    
-    NSLog(@"-----------收到产品反馈信息--------------");
-    NSLog(@"[C][productsRequest] pid%@",pid);
+    NSLog(@"[IAPManager][productsRequest]");
     NSArray *products = response.products;
     NSLog(@"产品Product ID:%@",response.invalidProductIdentifiers);
     NSLog(@"产品付费数量: %d", (int)[products count]);
@@ -56,27 +65,26 @@ extern NSString *order_id=@"";
     for(NSString *invalidProductId in response.invalidProductIdentifiers){
         NSLog(@"Invalid product id:%@",invalidProductId);
     }
-    // [request autorelease];
+//     [request autorelease];
 }
 -(void)giveParam:(NSString *)timeString{
     order_id =timeString;
 }
 
 -(void)buyRequest:(NSString *)productIdentifier{
-//    NSArray* transactions=[SKPaymentQueue defaultQueue].transactions;
-//    if(transactions.count>0) {
-//      for(SKPaymentTransaction *tran in transactions) {
-//          NSLog(@"**************************************************************%@",tran.transactionState);
-//          //检查是否有完成的交易
-//          SKPaymentTransaction* transaction = [transactions firstObject];
-//          if(tran.transactionState == SKPaymentTransactionStatePurchasing) {
-//              NSLog(@"----------------------%@",tran.transactionState);
-//              [[SKPaymentQueue defaultQueue] finishTransaction:tran];
-//              return;
-//          }
-//      }
-//    }
-    //[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+    NSArray* transactions=[SKPaymentQueue defaultQueue].transactions;
+    if(transactions.count>0) {
+      for(SKPaymentTransaction *tran in transactions) {
+          //检查是否有完成的交易
+          SKPaymentTransaction* transaction = [transactions firstObject];
+          if(tran.transactionState == SKPaymentTransactionStatePurchasing) {
+              NSLog(@"[IAPManager][buyRequest]%@",tran.transactionState);
+              [[SKPaymentQueue defaultQueue] finishTransaction:tran];
+              return;
+          }
+      }
+    }
+    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
     [self checkedLossOrders];
 
     productIndentify = productIdentifier;
@@ -84,19 +92,20 @@ extern NSString *order_id=@"";
     [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
 -(void)checkedLossOrders{
-
+    NSLog(@"[IAPManager][checkedLossOrders]");
     NSArray* transactions = [SKPaymentQueue defaultQueue].transactions;
     if (transactions.count > 0) {
-//        //检测是否有未完成的交易
-//        for (SKPaymentTransaction *transaction in transactions) {
-//            if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
-//                [self verifyPurchaseWithPaymentTransaction];// 发送到苹果服务器验证凭证
-//                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-//            }
-//
-//        }
+        //检测是否有未完成的交易
+        for (SKPaymentTransaction *transaction in transactions) {
+            NSLog(@"[IAPManager][checkedLossOrders] for (SKPaymentTransaction *transaction in transactions)");
+            if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
+                [self verifyPurchaseWithPaymentTransaction];// 发送到苹果服务器验证凭证
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+            }
+        }
         SKPaymentTransaction* transaction = [transactions firstObject];
         if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
+            NSLog(@"[IAPManager][checkedLossOrders] if (transaction.transactionState == SKPaymentTransactionStatePurchased)");
             lossIndentify = transaction.payment.productIdentifier;
             [self verifyPurchaseWithPaymentTransaction];// 发送到苹果服务器验证凭证
             [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
@@ -105,6 +114,7 @@ extern NSString *order_id=@"";
     }
 }
 -(NSString *)productInfo:(SKProduct *)product{
+    NSLog(@"[IAPManager][productInfo]");
     NSArray *info = [NSArray arrayWithObjects:product.localizedTitle,product.localizedDescription,product.price,product.productIdentifier, nil];
     
     return [info componentsJoinedByString:@"\t"];
@@ -117,6 +127,7 @@ extern NSString *order_id=@"";
  *  验证购买，避免越狱软件模拟苹果请求达到非法购买问题
  */
 -(void)verifyPurchaseWithPaymentTransaction{
+    NSLog(@"[IAPManager][verifyPurchaseWithPaymentTransaction]");
     //从沙盒中获取交易凭证并且拼接成请求体数据
     NSURL *receiptUrl=[[NSBundle mainBundle] appStoreReceiptURL];
     NSData *receiptData=[NSData dataWithContentsOfURL:receiptUrl];
@@ -141,22 +152,20 @@ extern NSString *order_id=@"";
 //    }
 //    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:nil];
     NSDictionary* dic = [self verifyPurchaseInfo:[NSURL URLWithString:AppStore] body:bodyData];
-    NSLog(@"%@",dic);
+    NSLog(@"[IAPManager][verifyPurchaseWithPaymentTransaction]%@",dic);
     if([dic[@"status"] intValue] == 21007){
         dic = [self verifyPurchaseInfo:[NSURL URLWithString:SANDBOX] body:bodyData];
     }
     if([dic[@"status"] intValue] == 0){
-        NSLog(@"购买成功！");
+        NSLog(@"[IAPManager][verifyPurchaseWithPaymentTransaction]购买成功");
         NSDictionary *dicReceipt = dic[@"receipt"];
         
-        NSLog(@"--------------%@", dicReceipt);
+        NSLog(@"[IAPManager][verifyPurchaseWithPaymentTransaction]dicReceipt=%@", dicReceipt);
         //NSDictionary *dicInApp = [dicReceipt[@"in_app"] firstObject];
         for(NSDictionary  *tmp in dicReceipt[@"in_app"])
         {
-            // NSLog(@"+++++++++++%@",dicInApp);
             NSString *productIdentifier = tmp[@"product_id"];//读取产品标识
-            NSLog(@"+++++++++++++++++++++++++++++++++++++%@",productIdentifier);
-            //NSLog(@"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%@",productIndentify);
+            NSLog(@"[IAPManager][verifyPurchaseWithPaymentTransaction]productIndentify=%@",productIdentifier);
             //如果是消耗品则记录购买数量，非消耗品则记录是否购买过
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             if ([productIdentifier isEqualToString:productIndentify] ||
@@ -165,14 +174,14 @@ extern NSString *order_id=@"";
                 NSInteger purchasedCount = [defaults integerForKey:productIdentifier];//已购买数量
                 [[NSUserDefaults standardUserDefaults] setInteger:(purchasedCount+1) forKey:productIdentifier];
                 [TDGAVirtualCurrency onChargeSuccess:order_id];
-                UnitySendMessage("PluginMercury", "PurchaseSuccessCallBack", pid.UTF8String);
+                UnitySendMessage("PluginMercury", "PurchaseSuccessCallBack", productIdentifier.UTF8String);
             }else{
                 [[NSUserDefaults standardUserDefaults] setBool:YES forKey:productIdentifier];
-                UnitySendMessage("PluginMercury", "PurchaseSuccessCallBack", pid.UTF8String);
+                UnitySendMessage("PluginMercury", "PurchaseSuccessCallBack", productIdentifier.UTF8String);
             }
         }
     }else{
-        NSLog(@"购买失败，未通过验证！");
+        NSLog(@"[IAPManager][verifyPurchaseWithPaymentTransaction]购买失败，未通过验证！");
     }
 }
 - (NSDictionary*)verifyPurchaseInfo:(NSURL *)url body:(NSData* )bodyData{
@@ -183,7 +192,7 @@ extern NSString *order_id=@"";
     NSError *error = nil;
     NSData *responseData = [NSURLConnection sendSynchronousRequest:requestM returningResponse:nil error:&error];
     if (error) {
-        NSLog(@"验证购买过程中发生错误，错误信息：%@",error.localizedDescription);
+        NSLog(@"[IAPManager][verifyPurchaseInfo]验证购买过程中发生错误，错误信息：%@",error.localizedDescription);
         return nil;
     }
     NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:nil];
@@ -194,26 +203,25 @@ extern NSString *order_id=@"";
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transaction{
     for(SKPaymentTransaction *tran in transaction){
         switch (tran.transactionState) {
-            case SKPaymentTransactionStatePurchased:{
-                NSLog(@"交易完成");
+            case SKPaymentTransactionStatePurchased:
+                NSLog(@"[IAPManager][paymentQueue]交易完成Start");
                 [self verifyPurchaseWithPaymentTransaction];// 发送到苹果服务器验证凭证
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
-            }
                 break;
             case SKPaymentTransactionStatePurchasing:
-                NSLog(@"商品添加进列表");
+                NSLog(@"[IAPManager][paymentQueue]商品添加进列表");
                 break;
             case SKPaymentTransactionStateRestored:
-                NSLog(@"已经购买过商品");
+                NSLog(@"[IAPManager][paymentQueue]恢复购买过商品");
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
                 break;
-            case SKPaymentTransactionStateFailed:{
-                NSLog(@"交易失败");
+            case SKPaymentTransactionStateFailed:
+                NSLog(@"[IAPManager][paymentQueue]交易失败");
                 [[[UIAlertView alloc]initWithTitle:@"提示" message:@"交易失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] show];
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
-            }
                 break;
             default:
+                NSLog(@"[IAPManager][paymentQueue]未知交易");
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
                 break;
         }

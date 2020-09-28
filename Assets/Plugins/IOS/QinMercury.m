@@ -284,13 +284,6 @@ extern "C"
                                currencyType:@"RMB"
                       virtualCurrencyAmount:1
                                 paymentType:@"AppStore"];
-
-        if(nil == iapManager){//初始化
-            iapManager = [[IAPManager alloc] init];
-        }
-        [iapManager attachObserver];
-        
-        
         //pid = [NSString stringWithFormat:@"com.singmaan.sdk.6"];
         //商品信息
         [iapManager requestProductData:pid];
@@ -305,6 +298,10 @@ extern "C"
     {
         NSLog(@"[C][GameInit]");
         [QinMercury GameInit];
+        if(nil == iapManager){//初始化
+            iapManager = [[IAPManager alloc] init];
+        }
+        [iapManager attachObserver];
     }
     
     void ActiveRewardVideo_IOS()
