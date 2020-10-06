@@ -297,6 +297,29 @@ public class PluginMercury : MonoBehaviour
 #endif
     }
 
+        public void VIPPanel()
+    {
+#if UNITY_EDITOR
+        print("[UNITY_EDITOR]->VIPPanel()");
+#elif UNITY_ANDROID
+        print("[Android]->VIPPanel()");_plugin.Call("VIPPanel");
+#elif UNITY_IPHONE
+        print("[UNITY_IPHONE]->VIPPanel()");
+#endif
+    }
+
+
+    public void DailyCheckInPanel()
+    {
+#if UNITY_EDITOR
+        print("[UNITY_EDITOR]->DailyCheckInPanel()");
+#elif UNITY_ANDROID
+        print("[Android]->DailyCheckInPanel()");_plugin.Call("DailyCheckInPanel");
+#elif UNITY_IPHONE
+        print("[UNITY_IPHONE]->DailyCheckInPanel()");
+#endif
+    }
+
 
     public void OpenGameCommunity()
     {

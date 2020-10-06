@@ -178,4 +178,17 @@ public class DemoButtonClick : MonoBehaviour {
         logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
         PluginMercury.Instance.Data_Event("Data_Event");
     }
+
+    public void VIPPanel()
+    {
+        logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
+        PluginMercury.Instance.VIPPanel();
+    }
+
+    public void DailyCheckInPanel()
+    {
+        logtext.text += "显示插屏视频，广告参数=" + "mainmenu\n";
+        PluginMercury.Instance.DailyCheckInPanel();
+    }
+
 }
