@@ -356,7 +356,6 @@ public class PluginMercury : MonoBehaviour
     {
         print("[Unity]->AdLoadFailedCallBack"+msg);
     }
-    
     public void AdShowSuccessCallBack(string msg)
     {
         print("[Unity]->AdShowSuccessCallBack"+msg);
@@ -372,6 +371,10 @@ public class PluginMercury : MonoBehaviour
     public void ProductionIDCallBack(string msg)
     {
         print("[Unity]->ProductionIDCallBack"+msg);
+    }
+    public void OnClaimReward(string msg)
+    {
+        print("[Unity]->OnClaimReward"+msg);
     }
 
 }
